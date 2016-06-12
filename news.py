@@ -50,7 +50,6 @@ def News_Info(newPage):
     dom = etree.HTML(newPage)
     news_titles = dom.xpath('//tr/td/a/text()')
     news_urls = dom.xpath('//tr/td/a/@href')
-    news = dom.xpath('//tr/td/a')
     return zip(news_titles, news_urls)
 
 
