@@ -18,13 +18,16 @@ def Crawler(url):
     myPageResults = Nav_Info(myPage)
     save_path = 'news'
     filename = str(i) + '_' + u'NewRank'
-    StringListSave(save_path, filename, myPageResults)  # 保存导航的标题、网址
+    # Save_As_Txt(save_path, filename, myPageResults)  # 保存导航的标题、网址
+    Save_As_Html(save_path, filename, myPageResults)
     i += 1
     for item, url in myPageResults:
         newPage = requests.get(url).content.decode('gbk')
         newPageResults = News_Info(newPage)
         filename = str(i) + '_' + item
-        StringListSave(save_path, filename, newPageResults)  # 保存每一类别下各新闻的标题、网址
+        # Save_As_Txt(save_path, filename, newPageResults)  #
+        # 保存每一类别下各新闻的标题、网址
+        Save_As_Html(save_path, filename, newPageResults)
         i += 1
 
 
@@ -47,16 +50,42 @@ def News_Info(newPage):
     dom = etree.HTML(newPage)
     news_titles = dom.xpath('//tr/td/a/text()')
     news_urls = dom.xpath('//tr/td/a/@href')
+    news = dom.xpath('//tr/td/a')
     return zip(news_titles, news_urls)
 
 
-def StringListSave(save_path, filename, slist):
+def Save_As_Txt(save_path, filename, slist):
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     path = save_path + '/' + filename + '.txt'
     with open(path, 'w+') as fp:
         for s in slist:
             fp.write('%s\t\t%s\n' % (s[0].encode('utf8'), s[1].encode('utf8')))
+
+
+def Save_As_Html(save_path, filename, slist):
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    path = save_path + '/' + filename + '.html'
+    with open(path, 'w+') as fp:
+        fp.write(
+            "<html><head> <meta charset='UTF-8'> </head><body><h1>Today's hot news</h1>")
+        fp.write('<br/>')
+        # 列表形式
+        fp.write('<table>')
+        for s in slist:
+            fp.write('<tr>')
+            fp.write('<td>')
+            fp.write('<td>' + s[0].encode('utf8') + '</td>')
+            fp.write('<td><a href>' + s[1].encode('utf8') + '</a > </td >')
+            fp.write('</tr>')
+        fp.write("</table>")
+        # 超链接形式
+        '''
+        for s in slist:
+            fp.write('<a href="' + s[1].encode('utf8') + '">'+s[0].encode('utf8') +'</a> <br/>')
+        '''
+        fp.write("</body></html>")
 
 if __name__ == '__main__':
     start_url = 'http://news.163.com/rank/'
