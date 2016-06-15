@@ -33,16 +33,10 @@ def Crawler(url):
 
 def Nav_Info(myPage):
     # 二级导航的标题和页面
-    pageInfo = re.findall(r'<div class="subNav">.*?<div class="area areabg1">', myPage, re.S)[
-        0].replace('<div class="subNav">', '').replace('<div class="area areabg1">', '')
-    soup = BeautifulSoup(pageInfo, "lxml")
-    tags = soup('a')
-    topics = []
-    for tag in tags:
-        # 只要 科技、财经、体育 的新闻
-        # if (tag.string=='科技' or tag.string=='财经' or tag.string=='体育'):
-        topics.append((tag.string, tag.get('href', None)))
-    return topics
+    dom = etree.HTML(myPage)
+    news_titles = dom.xpath('//div[@class="subNav"]/a/text()')
+    news_urls = dom.xpath('//div[@class="subNav"]/a/@href')
+    return zip(news_titles, news_urls)
 
 
 def News_Info(newPage):
