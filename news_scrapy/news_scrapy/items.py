@@ -8,12 +8,8 @@
 import scrapy
 
 
-class DidiScrapyItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
+class NewsScrapyItem(scrapy.Item):
     category = scrapy.Field()
     url = scrapy.Field()
     secondary_title = scrapy.Field()
     secondary_url = scrapy.Field()
-    #text = Field()
-    pass

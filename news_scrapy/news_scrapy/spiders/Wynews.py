@@ -6,7 +6,7 @@ sys.setdefaultencoding('utf8')
 import scrapy
 from scrapy.spider import BaseSpider
 from scrapy.selector import HtmlXPathSelector
-from didi_scrapy.items import DidiScrapyItem
+from news_scrapy.items import NewsScrapyItem
 from scrapy.http import Request
 
 class WynewsSpider(BaseSpider):
@@ -31,7 +31,7 @@ class WynewsSpider(BaseSpider):
         #print 'page ',page
         items = []
         for i in page:
-            item = DidiScrapyItem()
+            item = NewsScrapyItem()
             item['category'] = item_1['category'].encode('utf8')
             item['url'] = item_1['url'].encode('utf8')
             item['secondary_title'] = i.xpath('text()').extract_first().encode('utf8')
