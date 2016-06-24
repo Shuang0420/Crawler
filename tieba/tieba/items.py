@@ -15,4 +15,5 @@ class TiebaItem(scrapy.Item):
     pageUrl = scrapy.Field()
     url = scrapy.Field()
     text = scrapy.Field()
+    singlePage = scrapy.Field()
     pass
