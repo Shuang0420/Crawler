@@ -1,6 +1,7 @@
 # Crawler
 
 ## 网易新闻
+news.py 是直接用 python 实现的爬虫，并没有用到 scrapy， wynews 用到了 scrapy。
 仅爬取 "1小时前点击排行" 新闻。
 ### html 版
 一个类别一个文件，标题 "\t" url（超链接太丑，所以分开写）
@@ -31,3 +32,8 @@
 4. third_parse 获取最后的 item 并返回。
 
 值得注意的是 scrapy 默认会根据 url 的 finger print 进行去重，所以在第 3 步的时候很危险的一件事就是对只有 1 页内容的 post，如果把原链接传到 third_parse，那就会发现返回的结果并不会有这些信息，因为链接重复了，因此对于这种 post，要做的是在原链接之后加上 "?pn=1"，形成新链接进行处理。
+
+## 使用方法
+<pre>./runSpider.sh spider(Zhidao/Tieba/Wynews) category output</pre>
+
+注：Wynews 中的 category 指新闻类别，包括 新闻/娱乐/体育/财经/科技/汽车/女人/房产/读书/游戏/旅游/教育/公益/校园/传媒/视频/移动/全站/图集排行榜；Tieba Zhidao 的 category 即搜索关键词

@@ -12,13 +12,13 @@ import re
 
 
 class ZhidaoSpider(BaseSpider):
-    global keywords, base_url
-    #keywords = ['滴滴', '打车']
-    keywords = ['国美']
-    base_url = "http://zhidao.baidu.com"
-    start_urls = ['http://zhidao.baidu.com/search?lm=0&rn=10&pn=0&fr=search&ie=gbk&word=' +
-                  kw for kw in keywords]
     name = "Zhidao"
+
+    def __init__(self, category=None, *args, **kwargs):
+        super(ZhidaoSpider, self).__init__(*args, **kwargs)
+        self.base_url = "http://zhidao.baidu.com"
+        self.start_urls = ['http://zhidao.baidu.com/search?lm=0&rn=10&pn=0&fr=search&ie=gbk&word=' +
+                  category]
 
     @staticmethod
     def clean_data(page):
@@ -43,9 +43,10 @@ class ZhidaoSpider(BaseSpider):
         pageBaseUrl = str(pageUrls[-1]).split('&pn=')[0]
         pageCount = int(str(pageUrls[-1]).split('&pn=')[1])
         print pageCount
-        for i in range(0,pageCount+1,10):
+        for i in range(0,1):
+        #for i in range(0,pageCount+1,10):
             item = dict()
-            item['pageUrl'] = base_url + pageBaseUrl + "&pn=" + str(i)
+            item['pageUrl'] = self.base_url + pageBaseUrl + "&pn=" + str(i)
             yield Request(url=item['pageUrl'], meta={'item_1': item}, callback=self.first_parse)
 
     def first_parse(self, response):

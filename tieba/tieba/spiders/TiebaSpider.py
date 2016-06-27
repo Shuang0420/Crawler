@@ -12,12 +12,13 @@ from scrapy.selector import Selector
 
 
 class TiebaSpider(BaseSpider):
-    global keywords, base_url
-    keywords = ['国美']
-    base_url = "http://tieba.baidu.com"
-    start_urls = ['http://tieba.baidu.com/f?ie=utf-8&kw=' +
-                  kw for kw in keywords]
     name = "Tieba"
+
+    def __init__(self, category=None, *args, **kwargs):
+        super(TiebaSpider, self).__init__(*args, **kwargs)
+        self.base_url = "http://tieba.baidu.com"
+        self.start_urls = ['http://tieba.baidu.com/f?ie=utf-8&kw=' +
+                  category]
 
     @staticmethod
     def clean_data(page):
@@ -38,11 +39,20 @@ class TiebaSpider(BaseSpider):
         html = HtmlXPathSelector(response)
         pageUrls = html.xpath(
             '//div[@class="pagination-default clearfix"]/a[@class="last pagination-item "]/@href').extract()
-        pageBaseUrl = str(pageUrls[-1]).split('&pn=')[0]
-        pageCount = int(str(pageUrls[-1]).split('&pn=')[1])
+        if (len(pageUrls)==0):
+            singlePage = True
+            pageCount = 1
+        else:
+            singlePage = False
+            pageBaseUrl = str(pageUrls[-1]).split('&pn=')[0]
+            pageCount = int(str(pageUrls[-1]).split('&pn=')[1])
+        #for i in range(0,1):
         for i in range(0, pageCount + 1, 50):
             item = dict()
-            item['pageUrl'] = pageBaseUrl + "&pn=" + str(i)
+            if (singlePage):
+                item['pageUrl'] = self.start_urls[0] + "&pn=" + str(i)
+            else:
+                item['pageUrl'] = pageBaseUrl + "&pn=" + str(i)
             yield Request(url=item['pageUrl'], meta={'item_1': item}, callback=self.first_parse)
 
     def first_parse(self, response):
@@ -55,7 +65,7 @@ class TiebaSpider(BaseSpider):
         for i in page:
             item = dict()
             item['title'] = i.xpath('text()').extract_first()
-            item['url'] = base_url + i.xpath('@href').extract_first()
+            item['url'] = self.base_url + i.xpath('@href').extract_first()
             yield Request(url=item['url'], meta={'item_1': item}, callback=self.second_parse)
 
     def second_parse(self, response):
@@ -66,18 +76,18 @@ class TiebaSpider(BaseSpider):
         #response = response.body
         #response = self.clean_data(response)
         html = Selector(response)
-        pageCount = 1
         # 判断是否有下一页
         singlePage = False
         pageUrls = html.xpath(
             '//li[@class="l_pager pager_theme_5 pb_list_pager"]/a/@href')
         if (len(pageUrls)==0):
             singlePage = True
+            pageCount = 1
         else:
             data = str(pageUrls[-1]).split("data=u'")[-1]
             pageBaseUrl = data.split('?pn=')[0]
             pageCount = int(data.split('?pn=')[1].split("'>")[0])
-        # for i in range(1, 2):
+        #for i in range(1, 2):
         for i in range(1, pageCount + 1):
             item = dict()
             item['title'] = item_1['title'].encode('utf8')
@@ -85,7 +95,7 @@ class TiebaSpider(BaseSpider):
             if singlePage:
                 item['pageUrl'] = item['url'] + "?pn=" + str(i)
             else:
-                item['pageUrl'] = base_url + pageBaseUrl + "?pn=" + str(i)
+                item['pageUrl'] = self.base_url + pageBaseUrl + "?pn=" + str(i)
             yield Request(url=item['pageUrl'], meta={'item_1': item}, callback=self.third_parse)
 
     def third_parse(self, response):
