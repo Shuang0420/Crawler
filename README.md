@@ -25,7 +25,7 @@ news.py 是直接用 python 实现的爬虫，并没有用到 scrapy， wynews �
 一个 post 的一页是一条记录，楼与楼之间用 "##" 分隔。
 <pre>{"url": "http://tieba.baidu.com/p/4619660649", "text": "##什么情况啊##亲，抱歉给您带来不便，麻烦您提供下订单号码，方便及时查询处理您的问题。##正在出库还是小事，我的快递还被签收了，他们厉害吧##解决了，这家店居然周末不看订单##我也也是没收到货，确签收了，太坑人。解决事情太慢，", "pageUrl": "http://tieba.baidu.com/p/4619660649?pn=1", "title": "怎么两天了还正在出库？？？"}</pre>
 
-### 总的逻辑
+### 逻辑
 1. 假设某贴吧有 10000 页，parse 就是把这 10000 页的 url 给爬下来，然后 response 交给 first_parse 处理
 2. first_parse 爬取本页上的所有 post 的 url，然后 response 交给 second_parse
 3. 假设每个 post 有 1-N 页内容，second_parse 就爬取该 post 的该页的内容，response 交给 third_parse
