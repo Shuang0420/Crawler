@@ -37,3 +37,6 @@ news.py 是直接用 python 实现的爬虫，并没有用到 scrapy， wynews �
 <pre>./runSpider.sh spider(Zhidao/Tieba/Wynews) category output</pre>
 
 注：Wynews 中的 category 指新闻类别，包括 新闻/娱乐/体育/财经/科技/汽车/女人/房产/读书/游戏/旅游/教育/公益/校园/传媒/视频/移动/全站/图集排行榜；Tieba Zhidao 的 category 即搜索关键词
+
+eg. 爬取百度知道有关 iphone 的信息并保存为 iphone.json
+<pre>./runSpider.sh Zhidao iphone iphone.json</pre>

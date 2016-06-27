@@ -7,7 +7,7 @@ then
     category=$2
     output=$3
 else
-    echo "please run the following command ./runSpider.sh Zhidao/Tieba category output"
+    echo "please run the following command ./runSpider.sh spider(Zhidao/Tieba/Wynews) category output"
     exit 12
 fi
 
