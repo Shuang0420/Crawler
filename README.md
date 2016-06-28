@@ -39,6 +39,8 @@
 
 值得注意的是 scrapy 默认会根据 url 的 finger print 进行去重，所以在第 3 步的时候很危险的一件事就是对只有 1 页内容的 post，如果把原链接传到 third_parse，那就会发现返回的结果并不会有这些信息，因为链接重复了，因此对于这种 post，要做的是在原链接之后加上 "?pn=1"，形成新链接进行处理。
 
+另一种抓取下一页的方法如 WangyiSpider.py(https://github.com/Shuang0420/Crawler/blob/master/wangyi/wangyi/spiders/WangyiSpider.py)，先抓取本页信息，将 response 交给 second_parse，再判断是否有下一页，如果有，request 下一页。这种方式更加简单。
+
 ## 使用方法
 <pre>./runSpider.sh spider(Zhidao/Tieba/Wynews/Wangyi) category output</pre>
 

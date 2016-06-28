@@ -103,7 +103,6 @@ class TiebaSpider(BaseSpider):
         '''
         Get every post content
         '''
-        # print "third_parse"
         item_1 = response.meta['item_1']
         response = response.body
         response = self.clean_data(response)
@@ -120,17 +119,4 @@ class TiebaSpider(BaseSpider):
         # print item
         items.append(item)
         tmpItems=[]
-        '''
-        for i in page:
-            item = TiebaItem()
-            item['title'] = item_1['title'].encode('utf8')
-            item['url'] = item_1['url'].encode('utf8')
-            item['pageUrl'] = item_1['pageUrl'].encode('utf8')
-            item['text'] = i.xpath('text()').extract_first().strip()
-            # print item['title'], item['url'], item['text']
-            #rule = "|".join(keywords)
-            #if re.search(rule, str(item['text'])):
-            print "saved", item['title'], item['text']
-            items.append(item)
-            '''
         return items

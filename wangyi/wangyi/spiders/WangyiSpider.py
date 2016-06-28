@@ -33,30 +33,21 @@ class WangyiSpider(BaseSpider):
         return page
 
     def parse(self, response):
-        response = response  # .body.decode('gbk','ignore')
-        #response = self.clean_data(response)
+        response = response
         html = Selector(response)
         page = html.xpath('//h3/a')
         nextPage = html.xpath(
             '//div[@class="c-pages"]/a[@class="next-page"]/@href').extract_first()
         for i in page:
             item = dict()
-            #item['title'] = i.xpath('text()').extract_first()
             item['url'] = i.xpath('@href').extract_first()
-            # print item['title'], item['url']
-            #if item['url'].startswith('http://news.163.com') or item['url'].startswith('http://news.yodao.com'):
             yield Request(url=item['url'], meta={'item_1': item}, callback=self.second_parse)
         if nextPage:
-            # count+=1
             nextPage = self.base_url + nextPage
             yield Request(url=nextPage, callback=self.parse)
 
     def second_parse(self, response):
         item_1 = response.meta['item_1']
-        # print 'response ',response
-        #response = response.body.decode('gbk','ignore')
-        # remove image
-        #response = self.clean_data(response)
         html = Selector(response)
         title = html.xpath('//title/text()')
         text = html.xpath('//p/text()').extract()
