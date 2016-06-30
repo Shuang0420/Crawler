@@ -14,11 +14,18 @@ import re
 class ZhidaoSpider(BaseSpider):
     name = "Zhidao"
 
-    def __init__(self, category=None, *args, **kwargs):
+    def __init__(self, category=None, file=None, *args, **kwargs):
         super(ZhidaoSpider, self).__init__(*args, **kwargs)
         self.base_url = "http://zhidao.baidu.com"
+        if category and file:
+            print 'please choose exactly one way of input'
+        if category:
+            category = category.split('，')
+        if file:
+            f = open(file, 'r')
+            category = f.readlines()
         self.start_urls = ['http://zhidao.baidu.com/search?lm=0&rn=10&pn=0&fr=search&ie=gbk&word=' +
-                  category]
+                           item for item in category]
 
     @staticmethod
     def clean_data(page):
@@ -26,57 +33,45 @@ class ZhidaoSpider(BaseSpider):
         replaceLine = re.compile('<tr>|<div>|</div>|<p>|</p>|\r|\n')
         replaceBR = re.compile('<br>|<br >|<br />')
         removeExtraTag = re.compile('<em>|</em>|<strong>|</strong>')
-        page = re.sub(removeImg,"",page)
-        page = re.sub(replaceLine,"",page)
-        page = re.sub(replaceBR,"",page)
-        page = re.sub(removeExtraTag,"",page)
+        page = re.sub(removeImg, "", page)
+        page = re.sub(replaceLine, "", page)
+        page = re.sub(replaceBR, "", page)
+        page = re.sub(removeExtraTag, "", page)
         return page
 
     def parse(self, response):
-        '''
-        Get all page urls
-        '''
-        html = HtmlXPathSelector(response)
-        pageUrls = html.xpath('//div[@class="pager"]/a/@href').extract()
-        #print pageUrls
-        #print len(str(pageUrls[-1]).split('&pn='))
-        pageBaseUrl = str(pageUrls[-1]).split('&pn=')[0]
-        pageCount = int(str(pageUrls[-1]).split('&pn=')[1])
-        print pageCount
-        for i in range(0,1):
-        #for i in range(0,pageCount+1,10):
-            item = dict()
-            item['pageUrl'] = self.base_url + pageBaseUrl + "&pn=" + str(i)
-            yield Request(url=item['pageUrl'], meta={'item_1': item}, callback=self.first_parse)
-
-    def first_parse(self, response):
-        response = response.body.decode('gbk','ignore')
+        response = response.body.decode('gbk', 'ignore')
         response = self.clean_data(response)
         html = Selector(text=response)
         page = html.xpath('//div[@class="list"]/dl/dt/a')
+        nextPage = html.xpath(
+            '//div[@class="pager"]/a[@class="pager-next"]/@href').extract_first()
         for i in page:
             item = dict()
             item['title'] = i.xpath('text()').extract_first()
             item['url'] = i.xpath('@href').extract_first()
-            #print item['title'], item['url']
             yield Request(url=item['url'], meta={'item_1': item}, callback=self.second_parse)
+        if nextPage:
+            nextPage = self.base_url + nextPage
+            yield Request(url=nextPage, callback=self.parse)
 
     def second_parse(self, response):
         item_1 = response.meta['item_1']
         # print 'response ',response
-        response = response.body.decode('gbk','ignore')
-        ## remove image
+        response = response.body.decode('gbk', 'ignore')
+        # remove image
         response = self.clean_data(response)
         html = Selector(text=response)
         ques = html.xpath('//pre[@accuse="qContent"]/span').extract_first()
         # 普通回答
         ans = html.xpath('//div[@accuse="aContent"]/span/text()').extract()
         # 专业回答
-        ans_quality = html.xpath('//div[@class="quality-content-detail content"]/text()').extract()
+        ans_quality = html.xpath(
+            '//div[@class="quality-content-detail content"]/text()').extract()
         # 提问者采纳
         ans_best = html.xpath('//pre[@accuse="aContent"]/text()').extract()
-        #print "Q", ques
-        #print ans
+        # print "Q", ques
+        # print ans
         items = []
         if ques == None:
             ques = item_1['title'].encode('utf8')

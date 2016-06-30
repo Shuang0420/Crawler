@@ -17,8 +17,9 @@ class ZhidaoSpider(BaseSpider):
     def __init__(self, category=None, *args, **kwargs):
         super(ZhidaoSpider, self).__init__(*args, **kwargs)
         self.base_url = "http://zhidao.baidu.com"
+        category = category.split('，')
         self.start_urls = ['http://zhidao.baidu.com/search?lm=0&rn=10&pn=0&fr=search&ie=gbk&word=' +
-                  category]
+                  item for item in category]
 
     @staticmethod
     def clean_data(page):
@@ -32,34 +33,22 @@ class ZhidaoSpider(BaseSpider):
         page = re.sub(removeExtraTag,"",page)
         return page
 
-    def parse(self, response):
-        '''
-        Get all page urls
-        '''
-        html = HtmlXPathSelector(response)
-        pageUrls = html.xpath('//div[@class="pager"]/a/@href').extract()
-        #print pageUrls
-        #print len(str(pageUrls[-1]).split('&pn='))
-        pageBaseUrl = str(pageUrls[-1]).split('&pn=')[0]
-        pageCount = int(str(pageUrls[-1]).split('&pn=')[1])
-        print pageCount
-        for i in range(0,1):
-        #for i in range(0,pageCount+1,10):
-            item = dict()
-            item['pageUrl'] = self.base_url + pageBaseUrl + "&pn=" + str(i)
-            yield Request(url=item['pageUrl'], meta={'item_1': item}, callback=self.first_parse)
 
-    def first_parse(self, response):
+    def parse(self, response):
         response = response.body.decode('gbk','ignore')
         response = self.clean_data(response)
         html = Selector(text=response)
         page = html.xpath('//div[@class="list"]/dl/dt/a')
+        nextPage = html.xpath(
+            '//div[@class="pager"]/a[@class="pager-next"]/@href').extract_first()
         for i in page:
             item = dict()
             item['title'] = i.xpath('text()').extract_first()
             item['url'] = i.xpath('@href').extract_first()
-            #print item['title'], item['url']
             yield Request(url=item['url'], meta={'item_1': item}, callback=self.second_parse)
+        if nextPage:
+            nextPage = self.base_url + nextPage
+            yield Request(url=nextPage, callback=self.parse)
 
     def second_parse(self, response):
         item_1 = response.meta['item_1']

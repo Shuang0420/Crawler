@@ -31,17 +31,8 @@
 一个 post 的一页是一条记录，楼与楼之间用 "##" 分隔。
 <pre>{"url": "http://tieba.baidu.com/p/4619660649", "text": "##什么情况啊##亲，抱歉给您带来不便，麻烦您提供下订单号码，方便及时查询处理您的问题。##正在出库还是小事，我的快递还被签收了，他们厉害吧##解决了，这家店居然周末不看订单##我也也是没收到货，确签收了，太坑人。解决事情太慢，", "pageUrl": "http://tieba.baidu.com/p/4619660649?pn=1", "title": "怎么两天了还正在出库？？？"}</pre>
 
-### 逻辑
-1. 假设某贴吧有 10000 页，parse 就是把这 10000 页的 url 给爬下来，然后 response 交给 first_parse 处理
-2. first_parse 爬取本页上的所有 post 的 url，然后 response 交给 second_parse
-3. 假设每个 post 有 1-N 页内容，second_parse 就爬取该 post 的该页的内容，response 交给 third_parse
-4. third_parse 获取最后的 item 并返回。
-
-值得注意的是 scrapy 默认会根据 url 的 finger print 进行去重，所以在第 3 步的时候很危险的一件事就是对只有 1 页内容的 post，如果把原链接传到 third_parse，那就会发现返回的结果并不会有这些信息，因为链接重复了，因此对于这种 post，要做的是在原链接之后加上 "?pn=1"，形成新链接进行处理。
-
-另一种抓取下一页的方法如 ［[WangyiSpider.py](https://github.com/Shuang0420/Crawler/blob/master/wangyi/wangyi/spiders/WangyiSpider.py)，先抓取本页信息，将 response 交给 second_parse，再判断是否有下一页，如果有，request 下一页。这种方式更加简单，效率更高。
-
 ## 使用方法
+### 简洁版（必须指定 spider, category, output）
 <pre>./runSpider.sh spider(Zhidao/Tieba/Wynews/Wangyi) category output</pre>
 
 注：
@@ -49,6 +40,23 @@ Wynews 中的 category 指新闻类别，包括 新闻/娱乐/体育/财经/科�
 
 eg. 爬取百度知道有关 iphone 的信息并保存为 iphone.json
 <pre>./runSpider.sh Zhidao iphone iphone.zhidao.json</pre>
+
+### 复杂版（可选参数）
+<pre> ./runSpider2.sh -s (Zhidao/Tieba/Wynews/Wangyi) -f input</pre>
+Usage :
+-s <spider, with default all spiders>
+-c <categories split by "，">
+-f <input file>
+-o <output>
+-a <run all spiders, with default "output.json">
+-h <help>
+</pre>
+
+eg. 爬取 **百度知道** 有关 iphone 的信息并保存为 iphone.json
+<pre>./runSpider2.sh -s Zhidao -c iphone -o iphone.zhidao.json</pre>
+
+eg. 爬取 **百度知道、百度贴吧、网易新闻** 所有有关 iphone 的信息并保存为默认 output.json
+<pre>./runSpider2.sh -c iphone</pre>
 
 ## 数据后续处理
 [convertJson.py](https://github.com/Shuang0420/Crawler/blob/master/convertJson.py) 文件用于处理 json 文件，去除标点符号和其他特殊符号，输出较为“干净”的 txt 文件，用于之后的分词等工作。

@@ -17,8 +17,15 @@ class WangyiSpider(BaseSpider):
     def __init__(self, category=None, *args, **kwargs):
         super(WangyiSpider, self).__init__(*args, **kwargs)
         self.base_url = 'http://news.yodao.com/'
+        if category and file:
+            print 'please choose exactly one way of input'
+        if category:
+            category = category.split('，')
+        if file:
+            f = open(file, 'r')
+            category = f.readlines()
         self.start_urls = ['http://news.yodao.com/search?q=' +
-                           category]
+                           item for item in category]
 
     @staticmethod
     def clean_data(page):
