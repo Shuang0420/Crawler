@@ -35,22 +35,22 @@
 ### 简洁版（必须指定 spider, category, output）
 <pre>./runSpider.sh spider(Zhidao/Tieba/Wynews/Wangyi) category output</pre>
 
-注：
-Wynews 中的 category 指新闻类别，包括 新闻/娱乐/体育/财经/科技/汽车/女人/房产/读书/游戏/旅游/教育/公益/校园/传媒/视频/移动/全站/图集排行榜；Wangyi Tieba Zhidao 的 category 即搜索关键词
+**注：
+Wynews 中的 category 指新闻类别，包括 新闻/娱乐/体育/财经/科技/汽车/女人/房产/读书/游戏/旅游/教育/公益/校园/传媒/视频/移动/全站/图集排行榜；Wangyi Tieba Zhidao 的 category 即搜索关键词**
 
 eg. 爬取百度知道有关 iphone 的信息并保存为 iphone.json
 <pre>./runSpider.sh Zhidao iphone iphone.zhidao.json</pre>
 
 ### 复杂版（可选参数）
-<pre> ./runSpider2.sh -s (Zhidao/Tieba/Wynews/Wangyi) -f input
-Usage :
+```
+可选参数
 -s <spider, with default all spiders>
 -c <categories split by "，">
 -f <input file>
--o <output>
+-o <output file>
 -a <run all spiders, with default "output.json">
 -h <help>
-</pre>
+```
 
 eg. 爬取 **百度知道** 有关 iphone 的信息并保存为 iphone.json
 <pre>./runSpider2.sh -s Zhidao -c iphone -o iphone.zhidao.json</pre>

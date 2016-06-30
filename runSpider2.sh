@@ -6,7 +6,7 @@ usage ()
   echo '-s <spider, with default all spiders>'
   echo '-c <categories split by "，"> '
   echo '-f <input file> '
-  echo '-o <output> '
+  echo '-o <output file> '
   echo '-a <run all spiders, with default "output.json"> '
   echo '-h <help>'
   exit
