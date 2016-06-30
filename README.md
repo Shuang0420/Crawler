@@ -43,7 +43,7 @@ eg. 爬取百度知道有关 iphone 的信息并保存为 iphone.json
 
 ### 复杂版（可选参数）
 ```
-可选参数
+optional arguments:
 -s <spider, with default all spiders>
 -c <categories split by "，">
 -f <input file>
