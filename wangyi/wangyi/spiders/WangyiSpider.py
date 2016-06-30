@@ -14,7 +14,7 @@ import re
 class WangyiSpider(BaseSpider):
     name = "Wangyi"
 
-    def __init__(self, category=None, *args, **kwargs):
+    def __init__(self, category=None, file=None, *args, **kwargs):
         super(WangyiSpider, self).__init__(*args, **kwargs)
         self.base_url = 'http://news.yodao.com/'
         if category and file:
