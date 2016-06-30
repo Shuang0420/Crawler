@@ -42,7 +42,7 @@ eg. 爬取百度知道有关 iphone 的信息并保存为 iphone.json
 <pre>./runSpider.sh Zhidao iphone iphone.zhidao.json</pre>
 
 ### 复杂版（可选参数）
-<pre> ./runSpider2.sh -s (Zhidao/Tieba/Wynews/Wangyi) -f input</pre>
+<pre> ./runSpider2.sh -s (Zhidao/Tieba/Wynews/Wangyi) -f input
 Usage :
 -s <spider, with default all spiders>
 -c <categories split by "，">
