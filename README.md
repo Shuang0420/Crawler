@@ -62,3 +62,6 @@ eg. 爬取 **百度知道、百度贴吧、网易新闻** 所有有关 iphone �
 [convertJson.py](https://github.com/Shuang0420/Crawler/blob/master/convertJson.py) 文件用于处理 json 文件，去除标点符号和其他特殊符号，输出较为“干净”的 txt 文件，用于之后的分词等工作。
 filename 必须以 zhidao.json, tieba.json, wangyi.json 结尾。
 <pre>python convertJson.py filename</pre>
+
+## 其他
+blogCrawler 是一个通过设置 user-agent 和 ip 代理来防止爬虫被 ban 的测试。

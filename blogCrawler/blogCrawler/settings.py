@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for tieba project
+# Scrapy settings for blogCrawler project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,15 +9,12 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'tieba'
+BOT_NAME = 'blogCrawler'
 
-SPIDER_MODULES = ['tieba.spiders']
-NEWSPIDER_MODULE = 'tieba.spiders'
+SPIDER_MODULES = ['blogCrawler.spiders']
+NEWSPIDER_MODULE = 'blogCrawler.spiders'
 
 
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'tieba (+http://www.yourdomain.com)'
-'''
 USER_AGENTS = [
     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
     "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",
@@ -37,27 +34,32 @@ USER_AGENTS = [
     "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52",
 ]
 
-PROXIES = [{'ip_port': '121.69.22.250:8118', 'user_pass': ''},
-        {'ip_port': '182.89.26.147:8118', 'user_pass': ''},
-        {'ip_port': '182.54.14.122:8888', 'user_pass': ''},
-        {'ip_port': '117.95.54.110:8118', 'user_pass': ''},
-        {'ip_port': '151.80.83.141:80', 'user_pass': ''},
-        {'ip_port': '176.65.43.137:3128', 'user_pass': ''},
-        {'ip_port': '183.82.87.168:8080', 'user_pass': ''},
-        {'ip_port': '110.72.20.245:6673', 'user_pass': ''},
-        {'ip_port': '217.37.19.115:9050', 'user_pass': ''},
-        {'ip_port': '110.73.30.246:6666', 'user_pass': ''},
-        {'ip_port': '182.90.15.172:6675', 'user_pass': ''},
-        {'ip_port': '110.73.33.207:6673', 'user_pass': ''}]
-        '''
+# Retry many times since proxies often fail
+RETRY_TIMES = 10
+# Retry on most error codes since proxies fail for different reasons
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.contrib.downloadermiddleware.retry.RetryMiddleware': 90,
+    # Fix path to this module
+    'blogCrawler.middlewares.RandomProxy': 100,
+    'blogCrawler.middlewares.RandomUserAgent': 1,
+    'scrapy.contrib.downloadermiddleware.httpproxy.HttpProxyMiddleware': 110,
+}
+
+#PROXY_LIST = '/path/to/proxy/list.txt'
+PROXY_LIST ='/Users/sure/Desktop/python/blogCrawler/list.txt'
+
+# Crawl responsibly by identifying yourself (and your website) on the user-agent
+#USER_AGENT = 'blogCrawler (+http://www.yourdomain.com)'
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS=100
+#CONCURRENT_REQUESTS=32
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY=3
+DOWNLOAD_DELAY=3
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN=16
 #CONCURRENT_REQUESTS_PER_IP=16
@@ -77,20 +79,14 @@ COOKIES_ENABLED=False
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'tieba.middlewares.MyCustomSpiderMiddleware': 543,
+#    'blogCrawler.middlewares.MyCustomSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-'''
-DOWNLOADER_MIDDLEWARES = {
-    #'tieba.middlewares.MyCustomDownloaderMiddleware': 543,
-    'tieba.middlewares.RandomUserAgent': 1,
-    #'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110, #代理需要用到
-    # 'tieba.middlewares.ProxyMiddleware': 100, #代理需要用到
-    #'scrapy_crawlera.CrawleraMiddleware': 600,
-}
-'''
+#DOWNLOADER_MIDDLEWARES = {
+#    'blogCrawler.middlewares.MyCustomDownloaderMiddleware': 543,
+#}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -100,9 +96,9 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    'tieba.pipelines.TiebaPipeline': 300,
-}
+#ITEM_PIPELINES = {
+#    'blogCrawler.pipelines.SomePipeline': 300,
+#}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -122,12 +118,3 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR='httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES=[]
 #HTTPCACHE_STORAGE='scrapy.extensions.httpcache.FilesystemCacheStorage'
-
-'''
-DOWNLOADER_MIDDLEWARES = {'scrapy_crawlera.CrawleraMiddleware': 600}
-CRAWLERA_ENABLED = True
-CRAWLERA_APIKEY = 'fae5c81b730c45a481294578bbc8abf7'
-'''
-LOG_LEVEL = 'INFO'
-RETRY_ENABLED = False
-DOWNLOAD_TIMEOUT = 15

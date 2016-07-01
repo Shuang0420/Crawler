@@ -37,7 +37,6 @@ run ()
 
   if [ ! $output ]; then
     output='output.json'
-    echo $output
   fi
 
   if [ $spider ]; then
